@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.waduclay.StringCalculatorTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2025-10-18T07:58:33.673Z" hostname="ABCZWMACWK1" time="0.028">
+  <properties/>
+  <testcase name="mustRejectBackToBackSpecialCharacters()" classname="com.waduclay.StringCalculatorTest" time="0.017"/>
+  <testcase name="mustTakeBothCommaSeparatedAndReturnSeparatedValuesAndReturnTheirSum()" classname="com.waduclay.StringCalculatorTest" time="0.005"/>
+  <testcase name="mustTakeCommaSeparatedNumbersAndReturnTheirSum()" classname="com.waduclay.StringCalculatorTest" time="0.001"/>
+  <testcase name="mustNotAllowInputToEndInASeparator()" classname="com.waduclay.StringCalculatorTest" time="0.001"/>
+  <testcase name="mustReturnZeroForAnEmptyString()" classname="com.waduclay.StringCalculatorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
