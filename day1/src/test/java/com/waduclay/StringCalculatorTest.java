@@ -3,8 +3,12 @@ package com.waduclay;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,6 +27,12 @@ public class StringCalculatorTest {
     void mustTakeCommaSeparatedNumbersAndReturnTheirSum(){
         String result = StringCalculator.add("2, 3, 4");
         assertEquals("9", result);
+    }
+
+    @Test
+    void mustTakeCommaSeparatedNumbersAndReturnTheirSumAsStringDouble(){
+        String result = StringCalculator.add("2.1, 3, 4");
+        assertEquals("9.1", result);
     }
 
     @Test
@@ -45,14 +55,18 @@ public class StringCalculatorTest {
 
 
     @ParameterizedTest
-    @CsvSource({
-            "'//;\n1;2', '3'",
-            "'//|\n1|2|3', '6'",
-            "'//sep\n2sep3', '5'",
-            "'//|\n1|2,3', \"'|' expected but ',' found at position 3.\""
-    })
+    @MethodSource("provideTestCases")
     void mustAllowACustomDelimiter(String input, String expected){
         String result = StringCalculator.add(input);
         assertEquals(expected, result);
+    }
+
+    private static Stream<Arguments> provideTestCases() {
+        return Stream.of(
+                Arguments.of("//;\n1;2", "3"),
+                Arguments.of("//|\n1|2|3", "6"),
+                Arguments.of("//sep\n2sep3", "5"),
+                Arguments.of("//|\n1|2,3", "'|' expected but ',' found at position 3.")
+        );
     }
 }

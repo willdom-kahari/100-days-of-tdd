@@ -1,79 +1,121 @@
 package com.waduclay;
 
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:developer.wadu@gmail.com">Willdom Kahari</a>
  */
-public class StringCalculator {
-    private final static List<String> delimiters = new ArrayList<>();
-    static {
-        delimiters.add(",");
-        delimiters.add("\n");
-    }
+public final class StringCalculator {
+    // Immutable delimiter constants
+    private static final String PRIMARY_DELIMITER = ",";
+    private static final String SECONDARY_DELIMITER = "\n";
+    private static final Set<String> PREDEFINED_DELIMITERS = Set.of(PRIMARY_DELIMITER, SECONDARY_DELIMITER);
+
+    // Header markers for custom delimiter syntax
+    private static final String HEADER_PREFIX = "//";
+
+    // Precompiled pattern to detect custom delimiter header: //{delimiter}\n
+    private static final Pattern CUSTOM_DELIMITER_PATTERN =
+            Pattern.compile(Pattern.quote(HEADER_PREFIX) + "(.*?)" + Pattern.quote(SECONDARY_DELIMITER));
+
+    private StringCalculator() {}
+
     public static String add(String values) {
-        //handle the emptiness
-        if (values.isEmpty()){
-            return "0";
-        }
-        int numberOfElements = values.length();
-        if (delimiters.contains(String.valueOf(values.charAt(numberOfElements - 1)))){
-            return "Number expected but EOF found";
-        }
+        try {
+            if (values.isBlank()) {
+                return "0";
+            }
 
-        //handle custom delimiter
-        String regex = Pattern.quote("//") + "(.*?)" + Pattern.quote("\n");
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(values);
-        String delimiter = null;
+            validateEOF(values);
+            DelimiterSpec delimiterSpec = parseDelimiter(values);
+            validateBackToBackDelimiters(values);
+
+            String[] tokens = split(values, delimiterSpec);
+            return sum(tokens);
+        } catch (IllegalStateException e) {
+
+            return e.getMessage();
+        }
+    }
+
+    // ————— Parsing and tokenization —————
+
+    private static DelimiterSpec parseDelimiter(String input) {
+        Matcher matcher = CUSTOM_DELIMITER_PATTERN.matcher(input);
         if (matcher.find()) {
-            delimiter = matcher.group(1); // Group 1 contains the captured text
-            delimiters.add(delimiter);
+            return new DelimiterSpec(true, matcher.group(1));
         }
+        return new DelimiterSpec(false, null);
+    }
 
-        if (delimiter != null){
-            String delimiterDefinition = String.join("", "//", delimiter, "\n");
-            values = values.replace(delimiterDefinition, "");
+    private static String[] split(String values, DelimiterSpec spec) {
+        if (spec.custom()) {
+            return splitWithCustomDelimiter(spec.value(), values);
         }
+        return splitWithPredefinedDelimiters(values);
+    }
 
+    private static String[] splitWithCustomDelimiter(String delimiter, String values) {
+        // Remove the custom delimiter header: "//" + delimiter + "\n"
+        String header = HEADER_PREFIX + delimiter + SECONDARY_DELIMITER;
+        String withoutHeader = values.replace(header, "");
+
+        if (withoutHeader.contains(PRIMARY_DELIMITER)) {
+            int position = withoutHeader.indexOf(PRIMARY_DELIMITER);
+            throw new IllegalStateException("'|' expected but ',' found at position %d.".formatted(position));
+        }
+        return withoutHeader.split(Pattern.quote(delimiter));
+    }
+
+    private static String[] splitWithPredefinedDelimiters(String values) {
+        String normalized = values;
+        for (String del : PREDEFINED_DELIMITERS) {
+            normalized = normalized.replace(del, PRIMARY_DELIMITER);
+        }
+        return normalized.split(Pattern.quote(PRIMARY_DELIMITER));
+    }
+
+    // ————— Validation —————
+
+    private static void validateEOF(String values) {
+        int lastIndex = values.length() - 1;
+        String lastChar = String.valueOf(values.charAt(lastIndex));
+        if (PREDEFINED_DELIMITERS.contains(lastChar)) {
+            throw new IllegalStateException("Number expected but EOF found");
+        }
+    }
+
+    private static void validateBackToBackDelimiters(String values) {
         int positionOfNewLine = values.indexOf(",\n") + 1;
         int positionOfComma = values.indexOf("\n,") + 1;
-        if (positionOfNewLine > 0){
-            return "Number expected but '\\n' found at position %s.".formatted(positionOfNewLine);
+        if (positionOfNewLine > 0) {
+            throw new IllegalStateException("Number expected but '\\n' found at position %s.".formatted(positionOfNewLine));
         }
-        if (positionOfComma > 0){
-            return "Number expected but ',' found at position %s.".formatted(positionOfComma);
+        if (positionOfComma > 0) {
+            throw new IllegalStateException("Number expected but ',' found at position %s.".formatted(positionOfComma));
         }
-
-
-        for (String del: delimiters){
-            values = values.replace(del, delimiters.get(0));
-        }
-
-
-        String[] split = values.split(delimiters.get(0));
-
-        return sumAll(split);
     }
 
-    private static String sumAll(String[] split) {
-        double sum = Arrays.stream(split)
+    // ————— Summation —————
+
+    private static String sum(String[] numbers) {
+        double sum = Arrays.stream(numbers)
                 .map(String::trim)
                 .mapToDouble(Double::parseDouble)
                 .sum();
-        String sumAsString = String.valueOf(sum);
-        String[] splitSum = sumAsString.split("\\.");
-        if (splitSum[1].equals("0")){
-            return splitSum[0];
-        }
-
-        return sumAsString;
+        return formatSum(sum);
     }
 
-    record Delimiter(boolean custom, String value){}
+    private static String formatSum(double sum) {
+        if (sum == (int) sum) {
+            return String.valueOf((int) sum);
+        }
+        return String.valueOf(sum);
+    }
+
+
+    private record DelimiterSpec(boolean custom, String value) { }
 }
