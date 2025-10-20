@@ -2,6 +2,9 @@ package com.waduclay;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,13 +22,13 @@ public class StringCalculatorTest {
     @Test
     void mustTakeCommaSeparatedNumbersAndReturnTheirSum(){
         String result = StringCalculator.add("2, 3, 4");
-        assertEquals("9.0", result);
+        assertEquals("9", result);
     }
 
     @Test
     void mustTakeBothCommaSeparatedAndReturnSeparatedValuesAndReturnTheirSum() {
         String result = StringCalculator.add("1\n2,3");
-        assertEquals("6.0", result);
+        assertEquals("6", result);
     }
 
     @Test
@@ -38,5 +41,18 @@ public class StringCalculatorTest {
     void mustNotAllowInputToEndInASeparator( ){
         String result = StringCalculator.add("1,3,");
         assertEquals("Number expected but EOF found", result);
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+            "'//;\n1;2', '3'",
+            "'//|\n1|2|3', '6'",
+            "'//sep\n2sep3', '5'",
+            "'//|\n1|2,3', \"'|' expected but ',' found at position 3.\""
+    })
+    void mustAllowACustomDelimiter(String input, String expected){
+        String result = StringCalculator.add(input);
+        assertEquals(expected, result);
     }
 }
