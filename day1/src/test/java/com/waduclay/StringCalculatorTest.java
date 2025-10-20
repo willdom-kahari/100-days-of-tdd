@@ -61,6 +61,16 @@ public class StringCalculatorTest {
         assertEquals(expected, result);
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "'-1,2', 'Negative not allowed: -1'",
+            "'2,-4,-5', 'Negative not allowed: -4,-5'"
+    })
+    void mustNotAllowANegativeNumbers(String input, String expected){
+        String result = StringCalculator.add(input);
+        assertEquals(expected, result);
+    }
+
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
                 Arguments.of("//;\n1;2", "3"),

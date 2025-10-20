@@ -1,6 +1,8 @@
 package com.waduclay;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,11 +36,29 @@ public final class StringCalculator {
             validateBackToBackDelimiters(values);
 
             String[] tokens = split(values, delimiterSpec);
+            validateNegativeNumbers(tokens);
             return sum(tokens);
         } catch (IllegalStateException e) {
 
             return e.getMessage();
         }
+    }
+
+    private static void validateNegativeNumbers(String[] tokens) {
+        List<String> negativeNumbers = new ArrayList<>();
+        for (String token : tokens) {
+            double v = Double.parseDouble(token);
+            if (v < 0) {
+                negativeNumbers.add(token);
+            }
+        }
+
+        if (negativeNumbers.isEmpty()) {
+            return;
+        }
+
+        String join = String.join(PRIMARY_DELIMITER, negativeNumbers);
+        throw new IllegalStateException("Negative not allowed: " + join);
     }
 
     // ————— Parsing and tokenization —————
