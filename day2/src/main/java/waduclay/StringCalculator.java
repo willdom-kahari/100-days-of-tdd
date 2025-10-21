@@ -25,9 +25,8 @@ public final class StringCalculator {
     private static final Pattern CUSTOM_DELIMITER_PATTERN =
             Pattern.compile(Pattern.quote(HEADER_PREFIX) + "(.*?)" + Pattern.quote(SECONDARY_DELIMITER));
 
-    private StringCalculator() {}
 
-    public static String add(String values) {
+    public  String add(String values) {
         try {
             String[] tokens = validationChain(values);
             return sum(tokens);
@@ -37,7 +36,7 @@ public final class StringCalculator {
         }
     }
 
-    private static String[] validationChain(String values) {
+    private  String[] validationChain(String values) {
         validateBlank(values);
         validateEOF(values);
         DelimiterSpec delimiterSpec = parseDelimiter(values);
@@ -47,13 +46,13 @@ public final class StringCalculator {
         return tokens;
     }
 
-    private static void validateBlank(String values) {
+    private  void validateBlank(String values) {
         if (values.isBlank()) {
             throw new IllegalStateException("0");
         }
     }
 
-    private static void validateNegativeNumbers(String[] tokens) {
+    private  void validateNegativeNumbers(String[] tokens) {
         List<String> negativeNumbers = new ArrayList<>();
         for (String token : tokens) {
             double v = Double.parseDouble(token);
@@ -72,7 +71,7 @@ public final class StringCalculator {
 
     // ————— Parsing and tokenization —————
 
-    private static DelimiterSpec parseDelimiter(String input) {
+    private  DelimiterSpec parseDelimiter(String input) {
         Matcher matcher = CUSTOM_DELIMITER_PATTERN.matcher(input);
         if (matcher.find()) {
             return new DelimiterSpec(true, matcher.group(1));
@@ -80,14 +79,14 @@ public final class StringCalculator {
         return new DelimiterSpec(false, null);
     }
 
-    private static String[] split(String values, DelimiterSpec spec) {
+    private  String[] split(String values, DelimiterSpec spec) {
         if (spec.custom()) {
             return splitWithCustomDelimiter(spec.value(), values);
         }
         return splitWithPredefinedDelimiters(values);
     }
 
-    private static String[] splitWithCustomDelimiter(String delimiter, String values) {
+    private  String[] splitWithCustomDelimiter(String delimiter, String values) {
         // Remove the custom delimiter header: "//" + delimiter + "\n"
         String header = HEADER_PREFIX + delimiter + SECONDARY_DELIMITER;
         String withoutHeader = values.replace(header, "");
@@ -99,7 +98,7 @@ public final class StringCalculator {
         return withoutHeader.split(Pattern.quote(delimiter));
     }
 
-    private static String[] splitWithPredefinedDelimiters(String values) {
+    private  String[] splitWithPredefinedDelimiters(String values) {
         String normalized = values;
         for (String del : PREDEFINED_DELIMITERS) {
             normalized = normalized.replace(del, PRIMARY_DELIMITER);
@@ -109,7 +108,7 @@ public final class StringCalculator {
 
     // ————— Validation —————
 
-    private static void validateEOF(String values) {
+    private  void validateEOF(String values) {
         int lastIndex = values.length() - 1;
         String lastChar = String.valueOf(values.charAt(lastIndex));
         if (PREDEFINED_DELIMITERS.contains(lastChar)) {
@@ -117,7 +116,7 @@ public final class StringCalculator {
         }
     }
 
-    private static void validateBackToBackDelimiters(String values) {
+    private  void validateBackToBackDelimiters(String values) {
         int positionOfNewLine = values.indexOf(",\n") + 1;
         int positionOfComma = values.indexOf("\n,") + 1;
         if (positionOfNewLine > 0) {
@@ -130,14 +129,14 @@ public final class StringCalculator {
 
     // ————— Summation —————
 
-    private static String sum(String[] numbers) {
+    private  String sum(String[] numbers) {
         double sum = Arrays.stream(numbers)
                 .map(String::trim)
                 .mapToDouble(Double::parseDouble)
                 .sum();
         return formatResult(sum);
     }
-    private static String subtract(String[] numbers) {
+    private  String subtract(String[] numbers) {
         double answer = Double.parseDouble(numbers[0]);
         for (int i = 1; i < numbers.length; i++){
             answer -= Double.parseDouble(numbers[i]);
@@ -145,14 +144,14 @@ public final class StringCalculator {
         return formatResult(answer);
     }
 
-    private static String formatResult(double sum) {
+    private  String formatResult(double sum) {
         if (sum == (int) sum) {
             return String.valueOf((int) sum);
         }
         return String.valueOf(sum);
     }
 
-    public static String subtract(String values) {
+    public  String subtract(String values) {
         try {
             String[] tokens = validationChain(values);
             return subtract(tokens);
@@ -161,7 +160,7 @@ public final class StringCalculator {
         }
     }
 
-    public static String multiply(String values) {
+    public  String multiply(String values) {
         try {
             String[] tokens = validationChain(values);
             return multiply(tokens);
@@ -169,7 +168,7 @@ public final class StringCalculator {
             return e.getMessage();
         }
     }
-    private static String multiply(String[] numbers) {
+    private  String multiply(String[] numbers) {
         BigDecimal answer = BigDecimal.valueOf(Double.parseDouble(numbers[0]));
         for (int i = 1; i < numbers.length; i++){
             answer = answer.multiply(BigDecimal.valueOf(Double.parseDouble(numbers[i])));
@@ -177,7 +176,7 @@ public final class StringCalculator {
         return formatResult(answer.doubleValue());
     }
 
-    public static String divide(String values) {
+    public  String divide(String values) {
         try {
             String[] tokens = validationChain(values);
             return divide(tokens);
@@ -185,7 +184,7 @@ public final class StringCalculator {
             return e.getMessage();
         }
     }
-    private static String divide(String[] numbers) {
+    private  String divide(String[] numbers) {
         BigDecimal answer = BigDecimal.valueOf(Double.parseDouble(numbers[0]));
         for (int i = 1; i < numbers.length; i++){
             answer = answer.divide(BigDecimal.valueOf(Double.parseDouble(numbers[i])), RoundingMode.HALF_EVEN);

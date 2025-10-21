@@ -1,6 +1,7 @@
 package waduclay;
 
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,45 +16,51 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author <a href="mailto:developer.wadu@gmail.com">Willdom Kahari</a>
  */
 public class StringCalculatorSubtractionTest {
+    private StringCalculator calculator;
+    @BeforeEach
+    void setUp(){
+        calculator = new StringCalculator();
+    }
+    
     @Test
     void mustReturnZeroForAnEmptyString(){
-        String result = StringCalculator.subtract("");
+        String result = calculator.subtract("");
         assertEquals("0", result);
     }
 
     @Test
     void mustSubtract() {
-        String result = StringCalculator.subtract("2,1");
+        String result = calculator.subtract("2,1");
         assertEquals("1", result);
     }
 
     @Test
     void mustTakeCommaSeparatedNumbersAndReturnTheirDifference(){
-        String result = StringCalculator.subtract("2, 3, 4");
+        String result = calculator.subtract("2, 3, 4");
         assertEquals("-5", result);
     }
 
     @Test
     void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble(){
-        String result = StringCalculator.subtract("2.1, 3, 4");
+        String result = calculator.subtract("2.1, 3, 4");
         assertEquals("-4.9", result);
     }
 
     @Test
     void mustTakeBothCommaSeparatedAndReturnSeparatedValuesAndReturnTheirDifference() {
-        String result = StringCalculator.subtract("1\n2,3");
+        String result = calculator.subtract("1\n2,3");
         assertEquals("-4", result);
     }
 
     @Test
     void mustRejectBackToBackSpecialCharacters(){
-        String result = StringCalculator.subtract("175.2,\n35");
+        String result = calculator.subtract("175.2,\n35");
         assertEquals("Number expected but '\\n' found at position 6.", result);
     }
 
     @Test
     void mustNotAllowInputToEndInASeparator( ){
-        String result = StringCalculator.subtract("1,3,");
+        String result = calculator.subtract("1,3,");
         assertEquals("Number expected but EOF found", result);
     }
 
@@ -61,7 +68,7 @@ public class StringCalculatorSubtractionTest {
     @ParameterizedTest
     @MethodSource("provideTestCases")
     void mustAllowACustomDelimiter(String input, String expected){
-        String result = StringCalculator.subtract(input);
+        String result = calculator.subtract(input);
         assertEquals(expected, result);
     }
 
@@ -71,7 +78,7 @@ public class StringCalculatorSubtractionTest {
             "'2,-4,-5', 'Negative not allowed: -4,-5'"
     })
     void mustNotAllowANegativeNumbers(String input, String expected){
-        String result = StringCalculator.subtract(input);
+        String result = calculator.subtract(input);
         assertEquals(expected, result);
     }
 
