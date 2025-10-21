@@ -1,5 +1,6 @@
 package waduclay;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -157,6 +158,22 @@ public final class StringCalculator {
         }catch (IllegalStateException e){
             return e.getMessage();
         }
+    }
+
+    public static String multiply(String values) {
+        try {
+            String[] tokens = validationChain(values);
+            return multiply(tokens);
+        }catch (IllegalStateException e){
+            return e.getMessage();
+        }
+    }
+    private static String multiply(String[] numbers) {
+        BigDecimal answer = BigDecimal.valueOf(Double.parseDouble(numbers[0]));
+        for (int i = 1; i < numbers.length; i++){
+            answer = answer.multiply(BigDecimal.valueOf(Double.parseDouble(numbers[i])));
+        }
+        return formatResult(answer.doubleValue());
     }
 
 
