@@ -1,6 +1,7 @@
 package waduclay;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -172,6 +173,22 @@ public final class StringCalculator {
         BigDecimal answer = BigDecimal.valueOf(Double.parseDouble(numbers[0]));
         for (int i = 1; i < numbers.length; i++){
             answer = answer.multiply(BigDecimal.valueOf(Double.parseDouble(numbers[i])));
+        }
+        return formatResult(answer.doubleValue());
+    }
+
+    public static String divide(String values) {
+        try {
+            String[] tokens = validationChain(values);
+            return divide(tokens);
+        }catch (IllegalStateException e){
+            return e.getMessage();
+        }
+    }
+    private static String divide(String[] numbers) {
+        BigDecimal answer = BigDecimal.valueOf(Double.parseDouble(numbers[0]));
+        for (int i = 1; i < numbers.length; i++){
+            answer = answer.divide(BigDecimal.valueOf(Double.parseDouble(numbers[i])), RoundingMode.HALF_EVEN);
         }
         return formatResult(answer.doubleValue());
     }
