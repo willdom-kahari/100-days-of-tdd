@@ -27,17 +27,22 @@ public final class StringCalculator {
 
     public static String add(String values) {
         try {
-            validateBlank(values);
-            validateEOF(values);
-            DelimiterSpec delimiterSpec = parseDelimiter(values);
-            validateBackToBackDelimiters(values);
-            String[] tokens = split(values, delimiterSpec);
-            validateNegativeNumbers(tokens);
+            String[] tokens = validationChain(values);
             return sum(tokens);
         } catch (IllegalStateException e) {
 
             return e.getMessage();
         }
+    }
+
+    private static String[] validationChain(String values) {
+        validateBlank(values);
+        validateEOF(values);
+        DelimiterSpec delimiterSpec = parseDelimiter(values);
+        validateBackToBackDelimiters(values);
+        String[] tokens = split(values, delimiterSpec);
+        validateNegativeNumbers(tokens);
+        return tokens;
     }
 
     private static void validateBlank(String values) {
@@ -128,10 +133,17 @@ public final class StringCalculator {
                 .map(String::trim)
                 .mapToDouble(Double::parseDouble)
                 .sum();
-        return formatSum(sum);
+        return formatResult(sum);
+    }
+    private static String subtract(String[] numbers) {
+        double answer = Double.parseDouble(numbers[0]);
+        for (int i = 1; i < numbers.length; i++){
+            answer -= Double.parseDouble(numbers[i]);
+        }
+        return formatResult(answer);
     }
 
-    private static String formatSum(double sum) {
+    private static String formatResult(double sum) {
         if (sum == (int) sum) {
             return String.valueOf((int) sum);
         }
@@ -140,8 +152,8 @@ public final class StringCalculator {
 
     public static String subtract(String values) {
         try {
-            validateBlank(values);
-            return null;
+            String[] tokens = validationChain(values);
+            return subtract(tokens);
         }catch (IllegalStateException e){
             return e.getMessage();
         }
