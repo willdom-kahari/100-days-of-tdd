@@ -17,13 +17,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class StringCalculatorSubtractionTest {
     private StringCalculator calculator;
+
+    private static Stream<Arguments> provideTestCases() {
+        return Stream.of(
+                Arguments.of("//;\n1;2", "-1"),
+                Arguments.of("//|\n1|2|3", "-4"),
+                Arguments.of("//sep\n2sep3", "-1"),
+                Arguments.of("//|\n1|2,3", "'|' expected but ',' found at position 3.")
+        );
+    }
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
         calculator = new StringCalculator();
     }
-    
+
     @Test
-    void mustReturnZeroForAnEmptyString(){
+    void mustReturnZeroForAnEmptyString() {
         String result = calculator.subtract("");
         assertEquals("0", result);
     }
@@ -35,13 +45,13 @@ public class StringCalculatorSubtractionTest {
     }
 
     @Test
-    void mustTakeCommaSeparatedNumbersAndReturnTheirDifference(){
+    void mustTakeCommaSeparatedNumbersAndReturnTheirDifference() {
         String result = calculator.subtract("2, 3, 4");
         assertEquals("-5", result);
     }
 
     @Test
-    void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble(){
+    void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble() {
         String result = calculator.subtract("2.1, 3, 4");
         assertEquals("-4.9", result);
     }
@@ -53,21 +63,20 @@ public class StringCalculatorSubtractionTest {
     }
 
     @Test
-    void mustRejectBackToBackSpecialCharacters(){
+    void mustRejectBackToBackSpecialCharacters() {
         String result = calculator.subtract("175.2,\n35");
         assertEquals("Number expected but '\\n' found at position 6.", result);
     }
 
     @Test
-    void mustNotAllowInputToEndInASeparator( ){
+    void mustNotAllowInputToEndInASeparator() {
         String result = calculator.subtract("1,3,");
         assertEquals("Number expected but EOF found", result);
     }
 
-
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void mustAllowACustomDelimiter(String input, String expected){
+    void mustAllowACustomDelimiter(String input, String expected) {
         String result = calculator.subtract(input);
         assertEquals(expected, result);
     }
@@ -77,17 +86,8 @@ public class StringCalculatorSubtractionTest {
             "'-1,2', 'Negative not allowed: -1'",
             "'2,-4,-5', 'Negative not allowed: -4,-5'"
     })
-    void mustNotAllowANegativeNumbers(String input, String expected){
+    void mustNotAllowANegativeNumbers(String input, String expected) {
         String result = calculator.subtract(input);
         assertEquals(expected, result);
-    }
-
-    private static Stream<Arguments> provideTestCases() {
-        return Stream.of(
-                Arguments.of("//;\n1;2", "-1"),
-                Arguments.of("//|\n1|2|3", "-4"),
-                Arguments.of("//sep\n2sep3", "-1"),
-                Arguments.of("//|\n1|2,3", "'|' expected but ',' found at position 3.")
-        );
     }
 }

@@ -23,7 +23,8 @@ public final class StringCalculator {
     private static final Pattern CUSTOM_DELIMITER_PATTERN =
             Pattern.compile(Pattern.quote(HEADER_PREFIX) + "(.*?)" + Pattern.quote(SECONDARY_DELIMITER));
 
-    private StringCalculator() {}
+    private StringCalculator() {
+    }
 
     public static String add(String values) {
         try {
@@ -137,5 +138,6 @@ public final class StringCalculator {
     }
 
 
-    private record DelimiterSpec(boolean custom, String value) { }
+    private record DelimiterSpec(boolean custom, String value) {
+    }
 }

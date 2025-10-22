@@ -10,19 +10,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author <a href="mailto:developer.wadu@gmail.com">Willdom Kahari</a>
  */
-public class StringCalculatorMultiplicationTest {
+public class StringCalculatorAdditionTest {
     private StringCalculator calculator;
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of("//;\n1;2", "2"),
+                Arguments.of("//;\n1;2", "3"),
                 Arguments.of("//|\n1|2|3", "6"),
-                Arguments.of("//sep\n2sep3", "6"),
+                Arguments.of("//sep\n2sep3", "5"),
                 Arguments.of("//|\n1|2,3", "'|' expected but ',' found at position 3.")
         );
     }
@@ -34,51 +34,46 @@ public class StringCalculatorMultiplicationTest {
 
     @Test
     void mustReturnZeroForAnEmptyString() {
-        String result = calculator.multiply("");
-        assertEquals("0", result);
+
+        String result = calculator.add("");
+        assertThat(result).isEqualTo("0");
     }
 
     @Test
-    void mustMultiply() {
-        String result = calculator.multiply("2,1");
-        assertEquals("2", result);
+    void mustTakeCommaSeparatedNumbersAndReturnTheirSum() {
+        String result = calculator.add("2, 3, 4");
+        assertThat(result).isEqualTo("9");
     }
 
     @Test
-    void mustTakeCommaSeparatedNumbersAndReturnTheirDifference() {
-        String result = calculator.multiply("2, 3, 4");
-        assertEquals("24", result);
+    void mustTakeCommaSeparatedNumbersAndReturnTheirSumAsStringDouble() {
+        String result = calculator.add("2.1, 3, 4");
+        assertThat(result).isEqualTo("9.1");
     }
 
     @Test
-    void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble() {
-        String result = calculator.multiply("2.1, 3, 4");
-        assertEquals("25.2", result);
-    }
-
-    @Test
-    void mustTakeBothCommaSeparatedAndReturnSeparatedValuesAndReturnTheirDifference() {
-        String result = calculator.multiply("1\n2,3");
-        assertEquals("6", result);
+    void mustTakeBothCommaSeparatedAndReturnSeparatedValuesAndReturnTheirSum() {
+        String result = calculator.add("1\n2,3");
+        assertThat(result).isEqualTo("6");
     }
 
     @Test
     void mustRejectBackToBackSpecialCharacters() {
-        String result = calculator.multiply("175.2,\n35");
-        assertEquals("Number expected but '\\n' found at position 6.", result);
+        String result = calculator.add("175.2,\n35");
+        assertThat(result).isEqualTo("Number expected but '\\n' found at position 6.");
     }
 
     @Test
     void mustNotAllowInputToEndInASeparator() {
-        String result = calculator.multiply("1,3,");
-        assertEquals("Number expected but EOF found", result);
+        String result = calculator.add("1,3,");
+        assertThat(result).isEqualTo("Number expected but EOF found");
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
     void mustAllowACustomDelimiter(String input, String expected) {
-        String result = calculator.multiply(input);
-        assertEquals(expected, result);
+        String result = calculator.add(input);
+        assertThat(result).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -87,7 +82,7 @@ public class StringCalculatorMultiplicationTest {
             "'2,-4,-5', 'Negative not allowed: -4,-5'"
     })
     void mustNotAllowANegativeNumbers(String input, String expected) {
-        String result = calculator.multiply(input);
-        assertEquals(expected, result);
+        String result = calculator.add(input);
+        assertThat(result).isEqualTo(expected);
     }
 }

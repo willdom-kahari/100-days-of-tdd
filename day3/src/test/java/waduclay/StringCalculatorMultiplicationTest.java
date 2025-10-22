@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
  * @author <a href="mailto:developer.wadu@gmail.com">Willdom Kahari</a>
@@ -35,50 +35,50 @@ public class StringCalculatorMultiplicationTest {
     @Test
     void mustReturnZeroForAnEmptyString() {
         String result = calculator.multiply("");
-        assertEquals("0", result);
+        assertThat(result).isEqualTo("0");
     }
 
     @Test
     void mustMultiply() {
         String result = calculator.multiply("2,1");
-        assertEquals("2", result);
+        assertThat(result).isEqualTo("2");
     }
 
     @Test
     void mustTakeCommaSeparatedNumbersAndReturnTheirDifference() {
         String result = calculator.multiply("2, 3, 4");
-        assertEquals("24", result);
+        assertThat(result).isEqualTo("24");
     }
 
     @Test
     void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble() {
         String result = calculator.multiply("2.1, 3, 4");
-        assertEquals("25.2", result);
+        assertThat(result).isEqualTo("25.2");
     }
 
     @Test
     void mustTakeBothCommaSeparatedAndReturnSeparatedValuesAndReturnTheirDifference() {
         String result = calculator.multiply("1\n2,3");
-        assertEquals("6", result);
+        assertThat(result).isEqualTo("6");
     }
 
     @Test
     void mustRejectBackToBackSpecialCharacters() {
         String result = calculator.multiply("175.2,\n35");
-        assertEquals("Number expected but '\\n' found at position 6.", result);
+        assertThat(result).isEqualTo("Number expected but '\\n' found at position 6.");
     }
 
     @Test
     void mustNotAllowInputToEndInASeparator() {
         String result = calculator.multiply("1,3,");
-        assertEquals("Number expected but EOF found", result);
+        assertThat(result).isEqualTo("Number expected but EOF found");
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
     void mustAllowACustomDelimiter(String input, String expected) {
         String result = calculator.multiply(input);
-        assertEquals(expected, result);
+        assertThat(result).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -88,6 +88,6 @@ public class StringCalculatorMultiplicationTest {
     })
     void mustNotAllowANegativeNumbers(String input, String expected) {
         String result = calculator.multiply(input);
-        assertEquals(expected, result);
+        assertThat(result).isEqualTo(expected);
     }
 }

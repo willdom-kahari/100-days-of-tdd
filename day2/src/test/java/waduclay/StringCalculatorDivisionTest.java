@@ -18,19 +18,30 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 public class StringCalculatorDivisionTest {
     private StringCalculator calculator;
+
+    private static Stream<Arguments> provideTestCases() {
+        return Stream.of(
+                Arguments.of("//;\n1;2", "0.5"),
+                Arguments.of("//|\n1|2|3", "0.2"),
+                Arguments.of("//sep\n2sep3", "0.7"),
+                Arguments.of("//|\n1|2,3", "'|' expected but ',' found at position 3.")
+        );
+    }
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
         calculator = new StringCalculator();
     }
+
     @Test
-    void mustReturnZeroForAnEmptyString(){
+    void mustReturnZeroForAnEmptyString() {
         String result = calculator.divide("");
         assertEquals("0", result);
     }
 
     @Test
-    void mustThrowAnExceptionWhenDividingByZero(){
-        assertThrows(ArithmeticException.class, ()-> calculator.divide("10,0"));
+    void mustThrowAnExceptionWhenDividingByZero() {
+        assertThrows(ArithmeticException.class, () -> calculator.divide("10,0"));
     }
 
     @Test
@@ -40,13 +51,13 @@ public class StringCalculatorDivisionTest {
     }
 
     @Test
-    void mustTakeCommaSeparatedNumbersAndReturnTheirDifference(){
+    void mustTakeCommaSeparatedNumbersAndReturnTheirDifference() {
         String result = calculator.divide("2, 3, 4");
         assertEquals("0.2", result);
     }
 
     @Test
-    void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble(){
+    void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble() {
         String result = calculator.divide("2.1, 3, 4");
         assertEquals("0.2", result);
     }
@@ -58,21 +69,20 @@ public class StringCalculatorDivisionTest {
     }
 
     @Test
-    void mustRejectBackToBackSpecialCharacters(){
+    void mustRejectBackToBackSpecialCharacters() {
         String result = calculator.divide("175.2,\n35");
         assertEquals("Number expected but '\\n' found at position 6.", result);
     }
 
     @Test
-    void mustNotAllowInputToEndInASeparator( ){
+    void mustNotAllowInputToEndInASeparator() {
         String result = calculator.divide("1,3,");
         assertEquals("Number expected but EOF found", result);
     }
 
-
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void mustAllowACustomDelimiter(String input, String expected){
+    void mustAllowACustomDelimiter(String input, String expected) {
         String result = calculator.divide(input);
         assertEquals(expected, result);
     }
@@ -82,17 +92,8 @@ public class StringCalculatorDivisionTest {
             "'-1,2', 'Negative not allowed: -1'",
             "'2,-4,-5', 'Negative not allowed: -4,-5'"
     })
-    void mustNotAllowANegativeNumbers(String input, String expected){
+    void mustNotAllowANegativeNumbers(String input, String expected) {
         String result = calculator.divide(input);
         assertEquals(expected, result);
-    }
-
-    private static Stream<Arguments> provideTestCases() {
-        return Stream.of(
-                Arguments.of("//;\n1;2", "0.5"),
-                Arguments.of("//|\n1|2|3", "0.2"),
-                Arguments.of("//sep\n2sep3", "0.7"),
-                Arguments.of("//|\n1|2,3", "'|' expected but ',' found at position 3.")
-        );
     }
 }

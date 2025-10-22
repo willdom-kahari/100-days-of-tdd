@@ -10,19 +10,20 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 /**
  * @author <a href="mailto:developer.wadu@gmail.com">Willdom Kahari</a>
  */
-public class StringCalculatorMultiplicationTest {
+public class StringCalculatorDivisionTest {
     private StringCalculator calculator;
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of("//;\n1;2", "2"),
-                Arguments.of("//|\n1|2|3", "6"),
-                Arguments.of("//sep\n2sep3", "6"),
+                Arguments.of("//;\n1;2", "0.5"),
+                Arguments.of("//|\n1|2|3", "0.2"),
+                Arguments.of("//sep\n2sep3", "0.7"),
                 Arguments.of("//|\n1|2,3", "'|' expected but ',' found at position 3.")
         );
     }
@@ -34,51 +35,57 @@ public class StringCalculatorMultiplicationTest {
 
     @Test
     void mustReturnZeroForAnEmptyString() {
-        String result = calculator.multiply("");
-        assertEquals("0", result);
+        String result = calculator.divide("");
+        assertThat(result).isEqualTo("0");
     }
 
     @Test
-    void mustMultiply() {
-        String result = calculator.multiply("2,1");
-        assertEquals("2", result);
+    void mustThrowAnExceptionWhenDividingByZero() {
+        assertThatThrownBy(() -> calculator.divide("10,0"))
+                .isInstanceOfAny(ArithmeticException.class);
+    }
+
+    @Test
+    void mustDivide() {
+        String result = calculator.divide("2,1");
+        assertThat(result).isEqualTo("2");
     }
 
     @Test
     void mustTakeCommaSeparatedNumbersAndReturnTheirDifference() {
-        String result = calculator.multiply("2, 3, 4");
-        assertEquals("24", result);
+        String result = calculator.divide("2, 3, 4");
+        assertThat(result).isEqualTo("0.2");
     }
 
     @Test
     void mustTakeCommaSeparatedNumbersAndReturnTheirDifferenceAsStringDouble() {
-        String result = calculator.multiply("2.1, 3, 4");
-        assertEquals("25.2", result);
+        String result = calculator.divide("2.1, 3, 4");
+        assertThat(result).isEqualTo("0.2");
     }
 
     @Test
     void mustTakeBothCommaSeparatedAndReturnSeparatedValuesAndReturnTheirDifference() {
-        String result = calculator.multiply("1\n2,3");
-        assertEquals("6", result);
+        String result = calculator.divide("1\n2,3");
+        assertThat(result).isEqualTo("0.2");
     }
 
     @Test
     void mustRejectBackToBackSpecialCharacters() {
-        String result = calculator.multiply("175.2,\n35");
-        assertEquals("Number expected but '\\n' found at position 6.", result);
+        String result = calculator.divide("175.2,\n35");
+        assertThat(result).isEqualTo("Number expected but '\\n' found at position 6.");
     }
 
     @Test
     void mustNotAllowInputToEndInASeparator() {
-        String result = calculator.multiply("1,3,");
-        assertEquals("Number expected but EOF found", result);
+        String result = calculator.divide("1,3,");
+        assertThat(result).isEqualTo("Number expected but EOF found");
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
     void mustAllowACustomDelimiter(String input, String expected) {
-        String result = calculator.multiply(input);
-        assertEquals(expected, result);
+        String result = calculator.divide(input);
+        assertThat(result).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -87,7 +94,7 @@ public class StringCalculatorMultiplicationTest {
             "'2,-4,-5', 'Negative not allowed: -4,-5'"
     })
     void mustNotAllowANegativeNumbers(String input, String expected) {
-        String result = calculator.multiply(input);
-        assertEquals(expected, result);
+        String result = calculator.divide(input);
+        assertThat(result).isEqualTo(expected);
     }
 }

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class CalculatorTest {
     @Test
-    public void shouldAddTwoNumbers(){
+    public void shouldAddTwoNumbers() {
         int result = Calculator.add(1, 2);
         assertEquals(3, result);
     }
