@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.waduclay'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
+    testImplementation 'org.assertj:assertj-core:3.27.6'
+}
+
+test {
+    useJUnitPlatform()
+    // Recommended solution - add Mockito as Java agent
+    doFirst {
+        def mockitoAgent = configurations.testRuntimeClasspath.find { it.name.startsWith("mockito-core") }
+        if (mockitoAgent) {
+            jvmArgs "-javaagent:${mockitoAgent}"
+        }
+    }
+}

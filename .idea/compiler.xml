@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
-      <module name="day1" target="21" />
-      <module name="day1.main" target="21" />
-      <module name="day1.test" target="21" />
-    </bytecodeTargetLevel>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="day8" options="-parameters" />
+      <module name="day8.main" options="-parameters" />
+      <module name="day8.test" options="-parameters" />
+      <module name="day9" options="-parameters" />
+      <module name="day9.main" options="-parameters" />
+      <module name="day9.test" options="-parameters" />
+    </option>
   </component>
 </project>
